@@ -1,0 +1,33 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('api', {
+  minimize: () => ipcRenderer.send('window-minimize'),
+  maximize: () => ipcRenderer.send('window-maximize'),
+  close: () => ipcRenderer.send('window-close'),
+  isMaximized: () => ipcRenderer.invoke('window-is-maximized'),
+  getStore: (key) => ipcRenderer.invoke('store-get', key),
+  setStore: (key, value) => ipcRenderer.invoke('store-set', key, value),
+  getAvailableBrowsers: () => ipcRenderer.invoke('get-available-browsers'),
+  selectBrowser: (browserKey) => ipcRenderer.invoke('select-browser', browserKey),
+  openStream: (url) => ipcRenderer.invoke('open-stream', url),
+  reloadStream: () => ipcRenderer.invoke('reload-stream'),
+  closeEmbeddedBrowser: () => ipcRenderer.invoke('close-embedded-browser'),
+  updateBrowserBounds: (sidebarExpanded) => ipcRenderer.invoke('update-browser-bounds', sidebarExpanded),
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  // Overlay yönetimi — modal açıkken tarayıcıyı gizle
+  hideBrowser: () => ipcRenderer.invoke('hide-browser'),
+  showBrowser: () => ipcRenderer.invoke('show-browser'),
+  getChannels: () => ipcRenderer.invoke('get-channels'),
+  addChannel: (channel) => ipcRenderer.invoke('add-channel', channel),
+  updateChannel: (channel) => ipcRenderer.invoke('update-channel', channel),
+  deleteChannel: (channelId) => ipcRenderer.invoke('delete-channel', channelId),
+  checkStreams: () => ipcRenderer.invoke('check-streams'),
+  setAutoLaunch: (enabled) => ipcRenderer.invoke('set-auto-launch', enabled),
+  setStartMinimized: (enabled) => ipcRenderer.invoke('set-start-minimized', enabled),
+  setTheme: (theme) => ipcRenderer.invoke('set-theme', theme),
+  getCookieStatus: () => ipcRenderer.invoke('get-cookie-status'),
+  onWindowMaximized: (cb) => ipcRenderer.on('window-maximized', (_, v) => cb(v)),
+  onFullscreenChanged: (cb) => ipcRenderer.on('fullscreen-changed', (_, v) => cb(v)),
+  onChannelsUpdated: (cb) => ipcRenderer.on('channels-updated', (_, v) => cb(v)),
+  onOpenStreamFromNotification: (cb) => ipcRenderer.on('open-stream-from-notification', (_, v) => cb(v)),
+});

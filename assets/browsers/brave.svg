@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="braveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6000"/>
+      <stop offset="100%" style="stop-color:#FF1F3D"/>
+    </linearGradient>
+  </defs>
+  <path d="M50 8 L80 20 L88 55 C88 70 72 88 50 95 C28 88 12 70 12 55 L20 20 Z" fill="url(#braveGrad)"/>
+  <path d="M50 20 L67 27 L72 52 C72 62 62 74 50 79 C38 74 28 62 28 52 L33 27 Z" fill="white" opacity="0.2"/>
+  <path d="M43 42 L50 35 L57 42 L55 55 L50 60 L45 55 Z" fill="white"/>
+  <path d="M35 48 L43 42 L45 55 L40 60 Z" fill="white" opacity="0.8"/>
+  <path d="M65 48 L57 42 L55 55 L60 60 Z" fill="white" opacity="0.8"/>
+</svg>

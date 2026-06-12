@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>streamwatch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Custom Titlebar -->
+  <header id="titlebar">
+    <div id="titlebar-drag">
+      <div id="titlebar-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M4.75 6.75C4.75 5.64543 5.64543 4.75 6.75 4.75H17.25C18.3546 4.75 19.25 5.64543 19.25 6.75V17.25C19.25 18.3546 18.3546 19.25 17.25 19.25H6.75C5.64543 19.25 4.75 18.3546 4.75 17.25V6.75Z" stroke="url(#grad1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polygon points="10,8.5 16,12 10,15.5" fill="url(#grad1)"/>
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#7C3AED"/>
+              <stop offset="100%" style="stop-color:#EC4899"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>streamwatch</span>
+      </div>
+    </div>
+    <div id="titlebar-controls">
+      <button id="btn-home" class="titlebar-btn" title="Ana Ekran">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </button>
+      <button id="btn-reload-stream" class="titlebar-btn" title="Yayını Yenile">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"></path>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+      </button>
+      <button id="btn-settings-titlebar" class="titlebar-btn settings-btn" title="Ayarlar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </button>
+      <button id="btn-minimize" class="titlebar-btn" title="Küçült">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect y="5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg>
+      </button>
+      <button id="btn-maximize" class="titlebar-btn" title="Büyüt">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      </button>
+      <button id="btn-close" class="titlebar-btn close-btn" title="Kapat">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div id="app-container">
+    <!-- Onboarding Screen -->
+    <div id="onboarding" class="screen hidden">
+      <div class="onboarding-content">
+        <div class="onboarding-header">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+            <path d="M4.75 6.75C4.75 5.64543 5.64543 4.75 6.75 4.75H17.25C18.3546 4.75 19.25 5.64543 19.25 6.75V17.25C19.25 18.3546 18.3546 19.25 17.25 19.25H6.75C5.64543 19.25 4.75 18.3546 4.75 17.25V6.75Z" stroke="url(#grad2)" stroke-width="1.5"/>
+            <polygon points="10,8.5 16,12 10,15.5" fill="url(#grad2)"/>
+            <defs>
+              <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#7C3AED"/>
+                <stop offset="100%" style="stop-color:#EC4899"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <h1>streamwatch'a Hoş Geldiniz</h1>
+          <p>Devam etmek için kullandığınız tarayıcıyı seçin. Oturum bilgileriniz ve uzantılarınız aynen çalışacak.</p>
+        </div>
+        <div id="browser-grid" class="browser-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="screen hidden">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar expanded">
+        <div id="sidebar-header">
+          <button id="btn-toggle-sidebar" class="sidebar-toggle" title="Kenar çubuğunu daralt">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+          </button>
+          <span class="sidebar-title">Kanallar</span>
+        </div>
+
+        <div id="channel-list" class="channel-list">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div id="sidebar-footer">
+          <button id="btn-add-channel" class="btn-add-channel" title="Kanal Ekle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span class="add-channel-text">Kanal Ekle</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Content Area -->
+      <main id="content-area">
+        <div id="welcome-screen" class="welcome-screen">
+          <div class="welcome-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" opacity="0.3">
+              <path d="M4.75 6.75C4.75 5.64543 5.64543 4.75 6.75 4.75H17.25C18.3546 4.75 19.25 5.64543 19.25 6.75V17.25C19.25 18.3546 18.3546 19.25 17.25 19.25H6.75C5.64543 19.25 4.75 18.3546 4.75 17.25V6.75Z" stroke="currentColor" stroke-width="1.5"/>
+              <polygon points="10,8.5 16,12 10,15.5" fill="currentColor"/>
+            </svg>
+            <h2>streamwatch Hazır</h2>
+            <p>Sol panelden bir kanal seçerek yayın izlemeye başlayın.<br>Henüz kanal eklememişseniz, "Kanal Ekle" butonunu kullanın.</p>
+            
+            <div class="welcome-actions">
+              <button id="btn-welcome-settings" class="welcome-action-card">
+                <div class="card-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                  </svg>
+                </div>
+                <div class="card-title">Ayarlar</div>
+                <div class="card-desc">Görünüm, başlangıç ve kanal tercihlerini düzenleyin.</div>
+              </button>
+              
+              <button id="btn-welcome-howto" class="welcome-action-card">
+                <div class="card-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+                <div class="card-title">Nasıl Kullanılır?</div>
+                <div class="card-desc">Uygulamanın özelliklerini ve entegrasyonu öğrenin.</div>
+              </button>
+              
+              <button id="btn-welcome-license" class="welcome-action-card">
+                <div class="card-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                </div>
+                <div class="card-title">MIT Lisansı</div>
+                <div class="card-desc">streamwatch lisans haklarını ve detaylarını inceleyin.</div>
+              </button>
+              
+              <button id="btn-welcome-credits" class="welcome-action-card">
+                <div class="card-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div class="card-title">Geliştirici</div>
+                <div class="card-desc">Bu harika uygulamayı kimlerin yaptığını görün.</div>
+              </button>
+            </div>
+
+            <div id="welcome-cookie-warning" class="welcome-warning-box hidden">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <span>Hesap oturumlarının (çerezler) aktarılması için lütfen Brave tarayıcınızı kapatıp uygulamayı yeniden başlatın.</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Settings Panel (Overlay) -->
+    <div id="settings-overlay" class="overlay hidden">
+      <div id="settings-panel" class="settings-panel">
+        <div class="settings-header">
+          <h2>Ayarlar</h2>
+          <button id="btn-close-settings" class="btn-icon" title="Kapat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="settings-body">
+          <!-- Theme -->
+          <div class="settings-section">
+            <h3>Görünüm</h3>
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">Tema</span>
+                <span class="setting-desc">Uygulama temasını değiştirin</span>
+              </div>
+              <div class="theme-toggle" id="theme-toggle">
+                <button class="theme-btn" data-theme="dark">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+                  Koyu
+                </button>
+                <button class="theme-btn" data-theme="light">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0z"/><path d="M18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59z"/></svg>
+                  Açık
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Startup -->
+          <div class="settings-section">
+            <h3>Başlangıç</h3>
+            <div class="setting-row">
+              <div class="setting-info">
+                <span class="setting-label">Bilgisayarla birlikte başlat</span>
+                <span class="setting-desc">Bilgisayar açıldığında uygulamayı otomatik başlat</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-autolaunch">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-row sub-setting hidden" id="minimized-start-row">
+              <div class="setting-info">
+                <span class="setting-label">Simge durumunda başlat</span>
+                <span class="setting-desc">Başlangıçta simge durumuna küçültülmüş olarak açılsın</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-start-minimized">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Channel Management -->
+          <div class="settings-section">
+            <h3>Kanal Yönetimi</h3>
+            <div id="settings-channel-list" class="settings-channel-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Channel Modal -->
+    <div id="channel-modal-overlay" class="overlay hidden">
+      <div id="channel-modal" class="modal">
+        <div class="modal-header">
+          <h2 id="modal-title">Kanal Ekle</h2>
+          <button id="btn-close-modal" class="btn-icon" title="Kapat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-channel-name">Kanal Adı <span class="required">*</span></label>
+            <input type="text" id="input-channel-name" placeholder="Uygulamada görünecek isim" maxlength="50">
+          </div>
+          <div class="form-group">
+            <label for="input-youtube">
+              <svg class="platform-icon yt" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              YouTube
+            </label>
+            <input type="url" id="input-youtube" placeholder="https://youtube.com/@kanaladi">
+          </div>
+          <div class="form-group">
+            <label for="input-twitch">
+              <svg class="platform-icon tw" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+              Twitch
+            </label>
+            <input type="url" id="input-twitch" placeholder="https://twitch.tv/kanaladi">
+          </div>
+          <div class="form-group">
+            <label for="input-kick">
+              <svg class="platform-icon ki" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 14.5v-9l7 4.5-7 4.5z"/></svg>
+              Kick
+            </label>
+            <input type="url" id="input-kick" placeholder="https://kick.com/kanaladi">
+          </div>
+          <p id="modal-error" class="modal-error hidden"></p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-modal-cancel" class="btn btn-secondary">İptal</button>
+          <button id="btn-modal-save" class="btn btn-primary">Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Platform Selection Popup -->
+    <div id="platform-popup" class="platform-popup hidden">
+      <button class="platform-option" data-platform="youtube">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        YouTube
+      </button>
+      <button class="platform-option" data-platform="twitch">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+        Twitch
+      </button>
+      <button class="platform-option" data-platform="kick">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#53FC18"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 14.5v-9l7 4.5-7 4.5z"/></svg>
+        Kick
+      </button>
+    </div>
+
+    <!-- How-To Overlay -->
+    <div id="howto-overlay" class="overlay hidden">
+      <div class="settings-panel info-panel">
+        <div class="settings-header">
+          <h2>Nasıl Kullanılır?</h2>
+          <button id="btn-close-howto" class="btn-icon" title="Kapat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="settings-body scrollable-body">
+          <div class="info-section">
+            <div class="info-step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h4>Tarayıcı ve Oturum Senkronizasyonu</h4>
+                <p>Uygulama açılışında seçtiğiniz tarayıcı (Brave/Chrome/Edge) profilinizin oturumlarını (çerezler) ve uzantılarını (reklam engelleyiciler dahil) doğrudan kullanır. Bu sayede platformlarda tekrar giriş yapmanıza gerek kalmaz.</p>
+              </div>
+            </div>
+            <div class="info-step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h4>Kanal Ekleme</h4>
+                <p>Sol alttaki <strong>"Kanal Ekle"</strong> butonuna tıklayarak kanal adı girin ve izlemek istediğiniz platformların (YouTube, Twitch, Kick) profil/kanal linklerini ekleyin. Bir kanala birden fazla platform linki bağlayabilirsiniz.</p>
+              </div>
+            </div>
+            <div class="info-step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h4>Yayın İzleme</h4>
+                <p>Sol listedeki yayıncılardan birine tıkladığınızda eğer birden fazla platformu bağlıysa hangi platformda izlemek istediğinizi seçebileceğiniz bir menü açılır. Tek platform bağlıysa doğrudan o platform açılır.</p>
+              </div>
+            </div>
+            <div class="info-step">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <h4>Bildirim Tercihleri</h4>
+                <p>Ayarlar penceresinde, kayıtlı kanallarınızın sağ tarafında zil (bell) butonu bulunur. Her yayıncı için bildirimleri ayrı ayrı açıp kapatabilirsiniz.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIT License Overlay -->
+    <div id="license-overlay" class="overlay hidden">
+      <div class="settings-panel info-panel">
+        <div class="settings-header">
+          <h2>MIT Lisansı</h2>
+          <button id="btn-close-license" class="btn-icon" title="Kapat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="settings-body scrollable-body">
+          <pre class="license-text">
+MIT License
+
+Copyright (c) 2026 Pifo & streamwatch Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+          </pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credits/About Overlay -->
+    <div id="credits-overlay" class="overlay hidden">
+      <div class="settings-panel info-panel">
+        <div class="settings-header">
+          <h2>Geliştirici</h2>
+          <button id="btn-close-credits" class="btn-icon" title="Kapat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="settings-body scrollable-body credits-body">
+          <div class="creator-badge">
+            <div class="creator-avatar">
+              <img src="../../assets/pifo.png" alt="Pifo">
+            </div>
+            <h3>Pifo</h3>
+            <p class="role-desc">Uygulamanın Baş Geliştiricisi & Mimarı</p>
+          </div>
+          <div class="credits-details">
+            <div class="credit-item-desc" style="text-align: center; margin-bottom: 20px;">
+              Uygulamanın tüm fikir, tasarım, ana kod tabanı, gömülü tarayıcı entegrasyonu, ad-blocker motoru ve bildirim sistemi dahil olmak üzere <strong>her şeyi Pifo tarafından geliştirilmiştir</strong>.
+            </div>
+            <div class="developer-links">
+              <a href="#" class="dev-link-card external-link" data-url="https://github.com/EtliBiftek">
+                <svg class="dev-link-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.48C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                </svg>
+                <span>GitHub</span>
+              </a>
+              <a href="#" class="dev-link-card external-link" data-url="https://kick.com/pifocsgo">
+                <svg class="dev-link-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 14.5v-9l7 4.5-7 4.5z"/>
+                </svg>
+                <span>Kick</span>
+              </a>
+              <a href="#" class="dev-link-card external-link" data-url="https://www.youtube.com/@EtliBiftek">
+                <svg class="dev-link-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                <span>YouTube</span>
+              </a>
+              <a href="#" class="dev-link-card external-link" data-url="https://steamcommunity.com/id/PIFOcsgo/">
+                <svg class="dev-link-icon" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                  <path d="M12 .007c-6.19 0-11.295 4.67-11.933 10.707l5.96 2.457c.414-.31.916-.513 1.464-.564l2.64-3.793V8.765a2.502 2.502 0 0 1 2.502-2.502 2.502 2.502 0 0 1 2.502 2.502 2.502 2.502 0 0 1-2.502 2.502h-.056l-3.69 2.8c.046.398-.01.81-.19 1.183l5.512 2.274C21.037 16.713 24 12.39 24 7.421 24 3.327 18.63-.007 12 .007zM7.493 13.972l-5.617-2.316A11.968 11.968 0 0 0 12 23.993c5.967 0 10.9-4.363 11.832-10.088l-5.187-2.14a3.992 3.992 0 0 1-3.618 2.686 3.996 3.996 0 0 1-3.92-3.21l-2.9 2.2a3.991 3.991 0 0 1-.95 1.53c-.76.76-1.79 1.15-2.764.97zM6 14.5c0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5-.672 1.5-1.5 1.5S6 15.328 6 14.5z"/>
+                </svg>
+                <span>Steam</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

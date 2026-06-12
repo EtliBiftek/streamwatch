@@ -1,0 +1,38 @@
+{
+  "name": "yayin-izleme",
+  "version": "1.0.0",
+  "description": "YouTube, Twitch ve Kick yayıncılarını tek uygulamada izle",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "streaming",
+    "youtube",
+    "twitch",
+    "kick",
+    "electron"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "dependencies": {
+    "auto-launch": "^5.0.6",
+    "electron-store": "^8.2.0",
+    "node-html-parser": "^7.0.1",
+    "sql.js": "^1.14.1",
+    "uuid": "^11.1.0"
+  },
+  "build": {
+    "appId": "com.streamwatch.app",
+    "productName": "streamwatch",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    }
+  }
+}
