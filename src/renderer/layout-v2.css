@@ -56,6 +56,76 @@
   pointer-events: none !important;
 }
 
+/* Collapsed sidebar: keep every control on the same visual center line. */
+#sidebar.collapsed #sidebar-header {
+  justify-content: center;
+  gap: 0;
+  padding: 12px 0;
+}
+
+#sidebar.collapsed .sidebar-toggle {
+  flex: 0 0 36px;
+  margin: 0 auto;
+}
+
+#sidebar.collapsed #channel-list {
+  padding: 8px 6px !important;
+  scrollbar-gutter: auto;
+}
+
+#sidebar.collapsed .swx-channel-group {
+  width: 100% !important;
+}
+
+#sidebar.collapsed .channel-item {
+  width: 48px !important;
+  height: 48px;
+  max-width: 48px !important;
+  margin: 0 auto 4px !important;
+  padding: 6px !important;
+  gap: 0 !important;
+  justify-content: center;
+  flex: 0 0 48px;
+}
+
+#sidebar.collapsed .channel-item.active {
+  border-width: 1px;
+}
+
+#sidebar.collapsed .channel-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  flex: 0 0 36px;
+  margin: 0 !important;
+}
+
+#sidebar.collapsed .channel-info,
+#sidebar.collapsed .sw-layout-game,
+#sidebar.collapsed .swx-group-title,
+#sidebar.collapsed .swx-group-label {
+  display: none !important;
+}
+
+#sidebar.collapsed #sidebar-footer {
+  padding: 8px;
+}
+
+#sidebar.collapsed .btn-add-channel {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  margin: 0 auto;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+}
+
+#sidebar.collapsed .btn-add-channel svg {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 /* Settings v2 */
 #settings-panel.sw-settings-v2 {
   width: min(820px, calc(100vw - 64px)) !important;
