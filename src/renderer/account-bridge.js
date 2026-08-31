@@ -28,7 +28,7 @@
       return `${current.profileName || current.profile || 'Profil'} • ${current.imported || 0} oturum çerezi içe aktarıldı.`;
     }
     if (current.status === 'protected') {
-      return 'Tarayıcı çerezleri bulundu ancak bazıları tarayıcı koruması nedeniyle okunamadı. Aşağıdaki StreamWatch girişi kullanılabilir.';
+      return 'Tarayıcı çerezleri bulundu ancak bazıları tarayıcı koruması nedeniyle okunamadı. Yerel bağlantı merkezindeki StreamWatch girişi kullanılabilir.';
     }
     if (current.status === 'unsupported') return 'Bu tarayıcı için doğrudan çerez aktarımı desteklenmiyor.';
     if (current.error) return `Oturum aktarımı başarısız: ${current.error}`;
@@ -135,7 +135,7 @@
       <div class="sw-account-heading">
         <div>
           <strong>Platform hesaplarını bağla</strong>
-          <small>Harici tarayıcıda giriş yapıp oturumu otomatik içe aktarabilir veya StreamWatch'ın kendi oturumunda bir kez giriş yapabilirsin.</small>
+          <small>Bağlantı artık 127.0.0.1 üzerinde çalışan yerel StreamWatch sayfasından yönetilir. Sayfa seçtiğin tarayıcı ve profille açılır.</small>
         </div>
       </div>
       <div class="sw-account-grid">
@@ -147,30 +147,31 @@
             </div>
             <div class="sw-account-cookie-count" data-cookie-count>Oturum verisi yok</div>
             <div class="sw-account-buttons">
-              <button type="button" class="sw-account-primary-btn" data-account-external>Tarayıcıda Bağla</button>
+              <button type="button" class="sw-account-primary-btn" data-account-portal>Yerel Sitede Bağla</button>
               <button type="button" class="sw-account-secondary-btn" data-account-internal>StreamWatch'ta Giriş Yap</button>
             </div>
           </article>`).join('')}
       </div>
-      <div class="sw-account-footnote">Harici bağlantı seçtiğin tarayıcı ve profili açar. Giriş yaptıktan sonra StreamWatch oturumu kısa aralıklarla otomatik yeniler.</div>`;
+      <div class="sw-account-footnote">Yerel bağlantı merkezi yalnızca bilgisayarındaki 127.0.0.1 adresinde çalışır. Buradan platform giriş sayfasını açabilir, oturumu yenileyebilir ve tarayıcı koruması engellerse StreamWatch oturumuna doğrudan giriş yapabilirsin.</div>`;
 
     body.appendChild(section);
 
-    section.querySelectorAll('[data-account-external]').forEach((button) => {
+    section.querySelectorAll('[data-account-portal]').forEach((button) => {
       button.addEventListener('click', async () => {
         const card = button.closest('[data-platform]');
         const platform = card?.dataset.platform;
         if (!platform) return;
         button.disabled = true;
-        button.textContent = 'Tarayıcı açılıyor…';
+        button.textContent = 'Yerel site açılıyor…';
         try {
-          const result = await api.accountBridge.openExternal(platform);
+          const result = await api.accountBridge.openPortal(platform);
           if (result?.error) throw new Error(result.error);
-          button.textContent = 'Girişi Tamamla';
-          setTimeout(() => { if (button.isConnected) { button.disabled = false; button.textContent = 'Tarayıcıda Bağla'; } }, 5000);
-        } catch (error) {
-          button.disabled = false;
-          button.textContent = 'Tarayıcıda Bağla';
+        } finally {
+          setTimeout(() => {
+            if (!button.isConnected) return;
+            button.disabled = false;
+            button.textContent = 'Yerel Sitede Bağla';
+          }, 1200);
         }
       });
     });
