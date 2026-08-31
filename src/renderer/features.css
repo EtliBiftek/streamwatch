@@ -1,0 +1,173 @@
+.sw-feature-btn.active {
+  color: #c084fc !important;
+  background: rgba(124, 58, 237, 0.16) !important;
+}
+
+.sw-update-button {
+  width: auto !important;
+  min-width: 76px;
+  padding: 0 10px !important;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff !important;
+  background: linear-gradient(135deg, #7c3aed, #ec4899) !important;
+  border-radius: 7px;
+}
+
+.sw-update-button:disabled { opacity: .65; }
+.hidden { display: none !important; }
+
+.sw-feature-overlay {
+  position: fixed;
+  inset: 40px 0 0 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(3, 3, 5, .72);
+  backdrop-filter: blur(12px);
+}
+
+.sw-feature-panel {
+  width: min(760px, calc(100vw - 64px));
+  max-height: min(760px, calc(100vh - 88px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text-primary, #f5f5f5);
+  background: var(--bg-secondary, #121214);
+  border: 1px solid var(--border-color, rgba(255,255,255,.1));
+  border-radius: 16px;
+  box-shadow: 0 30px 90px rgba(0,0,0,.5);
+}
+
+.sw-feature-header,
+.sw-feature-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-color, rgba(255,255,255,.08));
+}
+
+.sw-feature-footer {
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-color, rgba(255,255,255,.08));
+  border-bottom: 0;
+}
+
+.sw-feature-header h2 { margin: 0; font-size: 17px; }
+.sw-feature-body { overflow: auto; padding: 18px; }
+.sw-muted { margin: 0 0 14px; color: var(--text-muted, #8b8b92); font-size: 12px; line-height: 1.55; }
+
+.sw-icon-button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  color: inherit;
+  background: transparent;
+  font-size: 23px;
+  cursor: pointer;
+}
+.sw-icon-button:hover { background: rgba(255,255,255,.08); }
+
+.sw-stream-choice-list { display: grid; gap: 8px; }
+.sw-stream-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, rgba(255,255,255,.08));
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(255,255,255,.025);
+}
+.sw-stream-choice:hover { background: rgba(124,58,237,.08); border-color: rgba(124,58,237,.28); }
+.sw-stream-choice input { accent-color: #8b5cf6; width: 16px; height: 16px; }
+.sw-stream-choice-main { display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 12px; }
+.sw-stream-choice-main small { color: var(--text-muted, #8b8b92); font-size: 10px; font-weight: 700; letter-spacing: .05em; }
+
+.sw-btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.sw-btn:disabled { opacity: .45; cursor: default; }
+.sw-btn-primary { color: #fff; background: linear-gradient(135deg, #7c3aed, #ec4899); }
+.sw-btn-danger { color: #fecaca; background: rgba(239,68,68,.13); }
+
+.sw-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.sw-stat-card {
+  padding: 14px;
+  border: 1px solid var(--border-color, rgba(255,255,255,.08));
+  border-radius: 11px;
+  background: rgba(255,255,255,.025);
+}
+.sw-stat-card span { display: block; color: var(--text-muted, #8b8b92); font-size: 11px; margin-bottom: 7px; }
+.sw-stat-card strong { font-size: 17px; }
+.sw-subtitle { margin: 20px 0 9px; font-size: 12px; color: var(--text-secondary, #ccc); }
+.sw-top-list, .sw-history-list { display: grid; gap: 6px; }
+.sw-top-row, .sw-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.025);
+}
+.sw-top-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sw-top-row strong, .sw-history-row > span { flex: 0 0 auto; color: #c4b5fd; font-size: 11px; }
+.sw-history-row > div { min-width: 0; }
+.sw-history-row strong, .sw-history-row small { display: block; }
+.sw-history-row strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.sw-history-row small { margin-top: 3px; color: var(--text-muted, #8b8b92); font-size: 10px; }
+.sw-empty { padding: 18px; text-align: center; color: var(--text-muted, #8b8b92); font-size: 12px; }
+
+.sw-settings-section { margin-top: 22px; }
+.sw-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color, rgba(255,255,255,.07));
+}
+.sw-setting-row strong, .sw-setting-row small { display: block; }
+.sw-setting-row strong { font-size: 12px; }
+.sw-setting-row small { margin-top: 4px; color: var(--text-muted, #8b8b92); font-size: 10px; line-height: 1.4; }
+.sw-inline-controls { display: flex; align-items: center; gap: 7px; }
+.sw-time-input,
+.sw-discord-id-row input {
+  color: var(--text-primary, #eee);
+  background: var(--bg-tertiary, #1a1a1d);
+  border: 1px solid var(--border-color, rgba(255,255,255,.1));
+  border-radius: 8px;
+  padding: 7px 9px;
+  outline: none;
+}
+.sw-time-input { width: 88px; }
+.sw-discord-id-row { display: grid; gap: 7px; padding: 12px 0 2px; }
+.sw-discord-id-row label { color: var(--text-muted, #8b8b92); font-size: 10px; }
+.sw-discord-id-row input:focus, .sw-time-input:focus { border-color: rgba(124,58,237,.7); }
+
+.sw-switch { position: relative; width: 38px; height: 22px; flex: 0 0 auto; }
+.sw-switch input { opacity: 0; width: 0; height: 0; }
+.sw-switch span { position: absolute; inset: 0; border-radius: 999px; background: rgba(255,255,255,.15); transition: .18s ease; }
+.sw-switch span::after { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: .18s ease; }
+.sw-switch input:checked + span { background: linear-gradient(135deg, #7c3aed, #ec4899); }
+.sw-switch input:checked + span::after { transform: translateX(16px); }
+
+@media (max-width: 1050px) {
+  .sw-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .sw-quiet-row { align-items: flex-start; flex-direction: column; }
+}

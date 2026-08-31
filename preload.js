@@ -9,9 +9,17 @@ contextBridge.exposeInMainWorld('api', {
   setStore: (key, value) => ipcRenderer.invoke('store-set', key, value),
   getAvailableBrowsers: () => ipcRenderer.invoke('get-available-browsers'),
   selectBrowser: (browserKey) => ipcRenderer.invoke('select-browser', browserKey),
-  openStream: (url) => ipcRenderer.invoke('open-stream', url),
+  openStream: async (url) => {
+    const result = await ipcRenderer.invoke('open-stream', url);
+    if (result?.success) await ipcRenderer.invoke('feature-watch-start', url);
+    return result;
+  },
   reloadStream: () => ipcRenderer.invoke('reload-stream'),
-  closeEmbeddedBrowser: () => ipcRenderer.invoke('close-embedded-browser'),
+  closeEmbeddedBrowser: async () => {
+    const result = await ipcRenderer.invoke('close-embedded-browser');
+    await ipcRenderer.invoke('feature-watch-stop');
+    return result;
+  },
   updateBrowserBounds: (sidebarExpanded) => ipcRenderer.invoke('update-browser-bounds', sidebarExpanded),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
   // Overlay yönetimi — modal açıkken tarayıcıyı gizle
@@ -30,4 +38,29 @@ contextBridge.exposeInMainWorld('api', {
   onFullscreenChanged: (cb) => ipcRenderer.on('fullscreen-changed', (_, v) => cb(v)),
   onChannelsUpdated: (cb) => ipcRenderer.on('channels-updated', (_, v) => cb(v)),
   onOpenStreamFromNotification: (cb) => ipcRenderer.on('open-stream-from-notification', (_, v) => cb(v)),
+  features: {
+    getSetting: (key) => ipcRenderer.invoke('feature-get-setting', key),
+    setSetting: (key, value) => ipcRenderer.invoke('feature-set-setting', key, value),
+    getWatchStats: () => ipcRenderer.invoke('feature-watch-stats'),
+    getCurrentMedia: () => ipcRenderer.invoke('feature-current-media'),
+    openMultiView: (entries) => ipcRenderer.invoke('feature-open-multiview', entries),
+    closeMultiView: () => ipcRenderer.invoke('feature-close-multiview'),
+    reloadMultiView: () => ipcRenderer.invoke('feature-reload-multiview'),
+    resizeMultiView: () => ipcRenderer.invoke('feature-resize-multiview'),
+    hideMultiView: () => ipcRenderer.invoke('feature-hide-multiview'),
+    showMultiView: () => ipcRenderer.invoke('feature-show-multiview'),
+    getMultiViewState: () => ipcRenderer.invoke('feature-multiview-state'),
+    cycleMultiViewAudio: () => ipcRenderer.invoke('feature-multiview-cycle-audio'),
+    openPip: (url) => ipcRenderer.invoke('feature-open-pip', url),
+    closePip: () => ipcRenderer.invoke('feature-close-pip'),
+    getPipState: () => ipcRenderer.invoke('feature-pip-state'),
+    getDiscordStatus: () => ipcRenderer.invoke('feature-discord-status'),
+    getUpdateState: () => ipcRenderer.invoke('feature-update-state'),
+    checkUpdate: () => ipcRenderer.invoke('feature-check-update'),
+    installUpdate: () => ipcRenderer.invoke('feature-install-update'),
+    onMultiViewState: (cb) => ipcRenderer.on('feature-multiview-state', (_, value) => cb(value)),
+    onPipState: (cb) => ipcRenderer.on('feature-pip-state', (_, value) => cb(value)),
+    onDiscordStatus: (cb) => ipcRenderer.on('feature-discord-status', (_, value) => cb(value)),
+    onUpdateState: (cb) => ipcRenderer.on('feature-update-state', (_, value) => cb(value)),
+  },
 });
