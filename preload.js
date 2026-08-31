@@ -40,6 +40,15 @@ contextBridge.exposeInMainWorld('api', {
   onFullscreenChanged: (cb) => ipcRenderer.on('fullscreen-changed', (_, v) => cb(v)),
   onChannelsUpdated: (cb) => ipcRenderer.on('channels-updated', (_, v) => cb(v)),
   onOpenStreamFromNotification: (cb) => ipcRenderer.on('open-stream-from-notification', (_, v) => cb(v)),
+  accountBridge: {
+    getProfiles: (browserKey) => ipcRenderer.invoke('account-bridge-profiles', browserKey),
+    selectProfile: (browserKey, profileId) => ipcRenderer.invoke('account-bridge-select-profile', browserKey, profileId),
+    refresh: (options) => ipcRenderer.invoke('account-bridge-refresh', options || {}),
+    getStatus: () => ipcRenderer.invoke('account-bridge-status'),
+    openExternal: (platform) => ipcRenderer.invoke('account-bridge-open-external', platform),
+    openInternal: (platform) => ipcRenderer.invoke('account-bridge-open-internal', platform),
+    onState: (cb) => ipcRenderer.on('account-bridge-state', (_, value) => cb(value)),
+  },
   liveTools: {
     checkNow: () => ipcRenderer.invoke('live-tools-check-now'),
     openChat: (entry) => ipcRenderer.invoke('live-tools-chat-open', entry),
