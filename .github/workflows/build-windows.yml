@@ -73,14 +73,41 @@ jobs:
         run: |
           set -euo pipefail
           node --check entry.js
+          node --check updater-v2.js
+          node --check updater-download-fix.js
           node --check preload.js
           node --check account-bridge.js
           node --check local-auth-portal.js
           node --check ui-integrations.js
+          node --check src/renderer/updater-v2.js
           node --check src/renderer/account-bridge.js
 
       - name: Build Windows installer
         run: npm run build -- --win --x64 --publish never
+
+      - name: Validate updater metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/latest.yml
+
+          INSTALLER_NAME="$(node - <<'NODE'
+          const fs = require('fs');
+          const text = fs.readFileSync('dist/latest.yml', 'utf8');
+          const url = text.match(/^\s*-?\s*url:\s*['\"]?([^'\"\r\n]+)['\"]?\s*$/m);
+          const path = text.match(/^path:\s*['\"]?([^'\"\r\n]+)['\"]?\s*$/m);
+          const value = (url?.[1] || path?.[1] || '').trim();
+          if (!value) process.exit(2);
+          process.stdout.write(value);
+          NODE
+          )"
+
+          echo "latest.yml installer: $INSTALLER_NAME"
+          ls -lah dist
+          if [ ! -f "dist/$INSTALLER_NAME" ]; then
+            echo "ERROR: latest.yml points to '$INSTALLER_NAME' but that installer does not exist in dist/."
+            exit 1
+          fi
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
