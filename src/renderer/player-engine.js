@@ -41,7 +41,7 @@
           <option value="mpv">MPV + Streamlink</option>
           <option value="vlc">VLC + Streamlink</option>
         </select>
-        <small class="swx-player-engine-note">Harici seçenekler için Streamlink ve siçilen player kurulu olmalı.</small>
+        <small class="swx-player-engine-note">Harici seçenekler için Streamlink ve seçilen player kurulu olmalı.</small>
       </div>`;
 
     const lightweight = document.getElementById('swx-lightweight-setting');
@@ -126,7 +126,7 @@
 
     const width = 376;
     const videoHeight = 212;
-  const headerHeight = 40;
+    const headerHeight = 40;
     const totalHeight = videoHeight + headerHeight;
     const rect = item.getBoundingClientRect();
     const x = Math.min(Math.max(8, rect.right + 8), Math.max(8, window.innerWidth - width - 8));
@@ -145,7 +145,7 @@
       <div class="swx-hover-preview-head">
         <span class="swx-hover-preview-avatar">${channel.avatarUrl ? `<img src="${esc(channel.avatarUrl)}" alt="">` : esc(channel.name?.charAt(0)?.toUpperCase() || '?')}</span>
         <div class="swx-hover-preview-copy">
-          <strong>${esc(channel.name || 'Yayın'i}</strong>
+          <strong>${esc(channel.name || 'Yayın')}</strong>
           <small>${esc(platformName)}</small>
         </div>
         <span class="swx-hover-preview-live ${isLive ? '' : 'offline'}">${isLive ? 'CANLI' : 'ÖNİZLEME'}</span>
@@ -192,7 +192,7 @@
     updateEngineNotice(await api.getStore('playerEngine') || 'embedded');
 
     const timer = setInterval(async () => {
-      if (await installPlayerEngineSetting()) interval();
+      if (await installPlayerEngineSetting()) clearInterval(timer);
     }, 250);
     setTimeout(() => clearInterval(timer), 10000);
   }
