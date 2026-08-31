@@ -1,6 +1,7 @@
 'use strict';
 
 require('./updater-v2.js');
+require('./updater-download-fix.js');
 require('./player-engine-v2.js');
 require('./preview-position-v2.js');
 require('./live-tools.js');
