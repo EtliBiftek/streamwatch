@@ -6,6 +6,7 @@ require('./preview-position-v2.js');
 require('./live-tools.js');
 require('./polling-guard.js');
 require('./account-bridge.js');
+require('./local-auth-portal.js');
 require('./enhancements.js');
 require('./developer-polish.js');
 require('./taskbar-icon.js');
