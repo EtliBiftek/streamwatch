@@ -29,12 +29,12 @@
   flex: 1 1 auto;
 }
 
+#channel-list .sw-live-details,
 #channel-list .sw-live-title {
   display: none !important;
 }
 
-.sw-layout-game,
-#channel-list .sw-live-game {
+.sw-layout-game {
   display: block;
   margin-top: 2px;
   max-width: 100%;
