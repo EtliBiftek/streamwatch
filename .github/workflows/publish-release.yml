@@ -1,0 +1,36 @@
+name: Publish Version 1.0.0
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish-release:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'release: publish Version 1.0.0')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Download exact artifact from successful build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release-assets
+          gh run download 33391880636 --repo "${{ github.repository }}" --name streamwatch-windows --dir release-assets
+          ls -lah release-assets
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "1.0.0" release-assets/* \
+            --repo "${{ github.repository }}" \
+            --target "47ea95317904a80a656dc65cb4e58e3a2b190fe2" \
+            --title "Version 1.0.0" \
+            --notes "StreamWatch 1.0.0\n\nMulti-View, akıllı canlı yayın bildirimleri, PiP, izleme geçmişi ve istatistikler, açılıp kapatılabilen Discord Rich Presence ve manuel güncelleme desteği eklendi."
