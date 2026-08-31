@@ -1,4 +1,4 @@
-name: Build Windows
+name: Build & Release Windows
 
 on:
   push:
@@ -7,7 +7,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: streamwatch-windows-main
+  cancel-in-progress: true
 
 jobs:
   build-windows:
@@ -40,3 +44,49 @@ jobs:
             dist/latest.yml
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="$VERSION"
+          TITLE="Version $VERSION"
+
+          echo "Publishing StreamWatch $VERSION from commit $GITHUB_SHA"
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; replacing its build assets."
+
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -f "$TAG" "$GITHUB_SHA"
+            git push origin "refs/tags/$TAG" --force
+
+            gh release upload "$TAG" \
+              dist/*.exe \
+              dist/*.blockmap \
+              dist/latest.yml \
+              --clobber \
+              --repo "$GITHUB_REPOSITORY"
+
+            gh release edit "$TAG" \
+              --title "$TITLE" \
+              --latest \
+              --repo "$GITHUB_REPOSITORY"
+          else
+            echo "Creating release $TAG."
+
+            gh release create "$TAG" \
+              dist/*.exe \
+              dist/*.blockmap \
+              dist/latest.yml \
+              --target "$GITHUB_SHA" \
+              --title "$TITLE" \
+              --generate-notes \
+              --latest \
+              --repo "$GITHUB_REPOSITORY"
+          fi
