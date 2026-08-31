@@ -316,6 +316,9 @@ async function installUpdateV2() {
 
 const nativeHandle = ipcMain.handle.bind(ipcMain);
 ipcMain.handle = (channel, listener) => {
+  if (channel === 'feature-update-state') {
+    return nativeHandle(channel, () => updateState);
+  }
   if (channel === 'feature-check-update') {
     originalUpdateCheck = listener;
     return nativeHandle(channel, () => runFullUpdateCheck());
