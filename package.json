@@ -1,8 +1,8 @@
 {
   "name": "yayin-izleme",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "YouTube, Twitch ve Kick yayıncılarını tek uygulamada izle",
-  "main": "bootstrap.js",
+  "main": "enhancements.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
