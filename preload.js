@@ -45,6 +45,7 @@ contextBridge.exposeInMainWorld('api', {
     selectProfile: (browserKey, profileId) => ipcRenderer.invoke('account-bridge-select-profile', browserKey, profileId),
     refresh: (options) => ipcRenderer.invoke('account-bridge-refresh', options || {}),
     getStatus: () => ipcRenderer.invoke('account-bridge-status'),
+    openPortal: (platform) => ipcRenderer.invoke('account-bridge-open-portal', platform),
     openExternal: (platform) => ipcRenderer.invoke('account-bridge-open-external', platform),
     openInternal: (platform) => ipcRenderer.invoke('account-bridge-open-internal', platform),
     onState: (cb) => ipcRenderer.on('account-bridge-state', (_, value) => cb(value)),
