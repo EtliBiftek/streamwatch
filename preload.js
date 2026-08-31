@@ -22,7 +22,6 @@ contextBridge.exposeInMainWorld('api', {
   },
   updateBrowserBounds: (sidebarExpanded) => ipcRenderer.invoke('update-browser-bounds', sidebarExpanded),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
-  // Overlay yönetimi — modal açıkken tarayıcıyı gizle
   hideBrowser: () => ipcRenderer.invoke('hide-browser'),
   showBrowser: () => ipcRenderer.invoke('show-browser'),
   getChannels: () => ipcRenderer.invoke('get-channels'),
@@ -62,5 +61,19 @@ contextBridge.exposeInMainWorld('api', {
     onPipState: (cb) => ipcRenderer.on('feature-pip-state', (_, value) => cb(value)),
     onDiscordStatus: (cb) => ipcRenderer.on('feature-discord-status', (_, value) => cb(value)),
     onUpdateState: (cb) => ipcRenderer.on('feature-update-state', (_, value) => cb(value)),
+  },
+  enhancements: {
+    openPreview: (entry, bounds) => ipcRenderer.invoke('enhancement-preview-open', entry, bounds),
+    closePreview: () => ipcRenderer.invoke('enhancement-preview-close'),
+    openTournament: (entries) => ipcRenderer.invoke('enhancement-tournament-open', entries),
+    closeTournament: () => ipcRenderer.invoke('enhancement-tournament-close'),
+    hideTournament: () => ipcRenderer.invoke('enhancement-tournament-hide'),
+    showTournament: () => ipcRenderer.invoke('enhancement-tournament-show'),
+    getTournamentState: () => ipcRenderer.invoke('enhancement-tournament-state'),
+    setVolume: (url, volume) => ipcRenderer.invoke('enhancement-set-volume', url, volume),
+    getVolumes: (urls) => ipcRenderer.invoke('enhancement-get-volumes', urls),
+    getReleaseNotes: () => ipcRenderer.invoke('enhancement-release-notes'),
+    getDiscordClientId: () => ipcRenderer.invoke('enhancement-discord-client-id'),
+    onTournamentState: (cb) => ipcRenderer.on('enhancement-tournament-state', (_, value) => cb(value)),
   },
 });
