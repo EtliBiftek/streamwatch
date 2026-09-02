@@ -77,6 +77,7 @@ jobs:
           node --check preload.js
           node --check account-bridge.js
           node --check local-auth-portal.js
+          node --check account-connections-v2.js
           node --check ui-integrations.js
           node --check src/renderer/updater-v2.js
           node --check src/renderer/account-bridge.js
