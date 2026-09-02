@@ -38,13 +38,6 @@
         "repo": "streamwatch"
       }
     ],
-    "extraResources": [
-      {
-        "from": "browser-extension",
-        "to": "browser-extension",
-        "filter": ["**/*"]
-      }
-    ],
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico",
