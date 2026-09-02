@@ -58,28 +58,152 @@ function platformLoginCss(platform) {
     return `
       ytd-masthead a[href*="accounts.google.com"],
       ytd-masthead a[href^="/signin"],
+      ytd-masthead a[href^="/login"],
       ytd-masthead [aria-label*="Sign in" i],
       ytd-masthead [aria-label*="Oturum aç" i],
-      ytd-masthead [aria-label*="Giriş yap" i] { display:none!important; }
+      ytd-masthead [aria-label*="Giriş yap" i],
+      ytd-button-renderer a[href*="ServiceLogin"],
+      ytd-button-renderer a[href*="accounts.google.com"] { display:none!important; }
     `;
   }
   if (platform === 'twitch') {
     return `
       [data-a-target="login-button"],
       [data-a-target="signup-button"],
-      a[href*="/login"],
-      button[aria-label*="Log in" i] { display:none!important; }
+      a[href="/login"],
+      a[href^="/login?"],
+      button[aria-label*="Log in" i],
+      button[aria-label*="Sign up" i] { display:none!important; }
     `;
   }
   if (platform === 'kick') {
     return `
       a[href="/login"],
       a[href^="/login?"],
+      a[href="/signup"],
+      a[href^="/signup?"],
       [data-testid*="login" i],
-      button[aria-label*="login" i] { display:none!important; }
+      [data-testid*="signup" i],
+      button[aria-label*="login" i],
+      button[aria-label*="giriş" i] { display:none!important; }
     `;
   }
   return '';
+}
+
+function authGuardScript(account) {
+  const payload = JSON.stringify(account).replace(/</g, '\\u003c');
+  return `(() => {
+    const account = ${payload};
+    const platform = account.platform;
+    const guardKey = '__streamwatch_oauth_auth_guard_' + platform;
+
+    const normalize = (value) => String(value || '')
+      .toLocaleLowerCase('tr-TR')
+      .replace(/\\s+/g, ' ')
+      .trim();
+
+    const looksLikeAuthText = (text) => {
+      const t = normalize(text);
+      if (!t) return false;
+      if (platform === 'kick') {
+        return (t.includes('giriş yap') || t.includes('log in') || t.includes('sign in'))
+          && (t.includes('şifre') || t.includes('password'))
+          && (t.includes('e-posta') || t.includes('email') || t.includes('kullanıcı adı') || t.includes('username'));
+      }
+      if (platform === 'twitch') {
+        return (t.includes('log in') || t.includes('giriş yap') || t.includes('sign in'))
+          && (t.includes('password') || t.includes('şifre'))
+          && (t.includes('username') || t.includes('email') || t.includes('kullanıcı adı'));
+      }
+      if (platform === 'youtube') {
+        return t.includes('sign in to youtube')
+          || t.includes('youtube’da oturum aç')
+          || t.includes('youtube\'da oturum aç')
+          || (t.includes('sign in') && t.includes('youtube'));
+      }
+      return false;
+    };
+
+    const removeAuthRoot = (node) => {
+      if (!node || node.id === '__streamwatch_oauth_identity') return false;
+      let root = node.closest?.('[role="dialog"], [aria-modal="true"], [class*="modal" i], [class*="dialog" i]');
+      if (!root) {
+        const form = node.matches?.('form') ? node : node.querySelector?.('form');
+        if (form) {
+          root = form.closest?.('[role="dialog"], [aria-modal="true"], [class*="modal" i], [class*="dialog" i]')
+            || form.parentElement?.parentElement?.parentElement
+            || form.parentElement;
+        }
+      }
+      if (!root || root === document.body || root === document.documentElement) return false;
+      try { root.remove(); } catch { root.style.setProperty('display', 'none', 'important'); }
+      document.documentElement.style.removeProperty('overflow');
+      document.body?.style?.removeProperty('overflow');
+      return true;
+    };
+
+    const sweep = () => {
+      let removed = false;
+      const candidates = [
+        ...document.querySelectorAll('[role="dialog"], [aria-modal="true"]'),
+        ...document.querySelectorAll('form'),
+      ];
+      for (const node of candidates) {
+        const text = node.innerText || node.textContent || '';
+        if (!looksLikeAuthText(text)) continue;
+        removed = removeAuthRoot(node) || removed;
+      }
+
+      if (removed) {
+        document.querySelectorAll('[data-radix-portal], [class*="backdrop" i], [class*="overlay" i]').forEach((node) => {
+          const t = normalize(node.innerText || node.textContent || '');
+          if (!t || looksLikeAuthText(t)) {
+            const rect = node.getBoundingClientRect?.();
+            if (rect && rect.width >= innerWidth * .7 && rect.height >= innerHeight * .7) {
+              try { node.remove(); } catch { node.style.setProperty('display', 'none', 'important'); }
+            }
+          }
+        });
+      }
+    };
+
+    const explicitLoginTarget = (element) => {
+      const el = element?.closest?.('a,button,[role="button"]');
+      if (!el) return false;
+      const href = String(el.getAttribute?.('href') || '');
+      const label = normalize(el.getAttribute?.('aria-label') || el.innerText || el.textContent || '');
+      if (platform === 'youtube') {
+        return /accounts\\.google\\.com|\\/(?:signin|login)(?:[/?#]|$)/i.test(href)
+          || label === 'sign in' || label === 'oturum aç' || label === 'giriş yap';
+      }
+      if (platform === 'twitch') {
+        return /\\/login(?:[/?#]|$)/i.test(href)
+          || label === 'log in' || label === 'giriş yap' || label === 'sign in';
+      }
+      if (platform === 'kick') {
+        return /\\/(?:login|signup|register)(?:[/?#]|$)/i.test(href)
+          || label === 'giriş yap' || label === 'log in' || label === 'sign in';
+      }
+      return false;
+    };
+
+    if (!window[guardKey]) {
+      window[guardKey] = true;
+      document.addEventListener('click', (event) => {
+        if (!explicitLoginTarget(event.target)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        sweep();
+      }, true);
+
+      const observer = new MutationObserver(() => sweep());
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      setInterval(sweep, 2500);
+    }
+
+    sweep();
+  })()`;
 }
 
 async function injectOAuthIdentity(webContents, url) {
@@ -166,6 +290,8 @@ async function injectOAuthIdentity(webContents, url) {
     webContents.executeJavaScript(`document.getElementById('__streamwatch_oauth_identity')?.remove()`).catch(() => {});
     return;
   }
+
+  webContents.executeJavaScript(authGuardScript(account)).catch(() => {});
 
   const payload = JSON.stringify(account).replace(/</g, '\\u003c');
   const script = `(() => {
