@@ -46,6 +46,7 @@ contextBridge.exposeInMainWorld('api', {
     getStatus: () => ipcRenderer.invoke('oauth-accounts-status'),
     validate: () => ipcRenderer.invoke('oauth-accounts-validate'),
     connect: (platform) => ipcRenderer.invoke('oauth-accounts-connect', platform),
+    openHub: () => ipcRenderer.invoke('oauth-connect-hub-open'),
     disconnect: (platform) => ipcRenderer.invoke('oauth-accounts-disconnect', platform),
     onState: (cb) => ipcRenderer.on('oauth-accounts-state', (_, value) => cb(value)),
   },
