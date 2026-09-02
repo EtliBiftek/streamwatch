@@ -80,6 +80,7 @@ jobs:
           node --check account-connections-v2.js
           node --check account-connections-v3.js
           node --check browser-session-bridge.js
+          node --check browser-bridge-legacy-off.js
           node --check ui-integrations.js
           node --check browser-extension/service-worker.js
           node --check browser-extension/bridge-page.js
