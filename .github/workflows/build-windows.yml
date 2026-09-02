@@ -77,9 +77,11 @@ jobs:
           node --check preload.js
           node --check oauth-session-mode.js
           node --check oauth-accounts.js
+          node --check oauth-connect-hub.js
           node --check ui-integrations.js
           node --check src/renderer/updater-v2.js
           node --check src/renderer/oauth-accounts.js
+          node --check src/renderer/oauth-connect-hub-ui.js
 
       - name: Build Windows installer
         run: npm run build -- --win --x64 --publish never
