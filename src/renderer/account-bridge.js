@@ -9,15 +9,16 @@
 
   function statusLabel(info) {
     if (!info) return 'Bağlı değil';
+    if (info.blocked) return 'Bağlantı kesildi';
     if (info.state === 'connected') return 'Bağlı';
-    if (info.state === 'cookies') return 'Oturum verisi bulundu';
+    if (info.state === 'cookies') return 'Doğrulanamadı';
     return 'Bağlı değil';
   }
 
   function statusClass(info) {
     if (!info) return 'off';
-    if (info.state === 'connected') return 'ok';
-    if (info.state === 'cookies') return 'partial';
+    if (info.state === 'connected' && !info.blocked) return 'ok';
+    if (info.state === 'cookies' && !info.blocked) return 'partial';
     return 'off';
   }
 
@@ -25,14 +26,14 @@
     const current = state?.cookieImport;
     if (!current) return 'Henüz tarayıcı oturumu içe aktarılmadı.';
     if (current.status === 'success') {
-      return `${current.profileName || current.profile || 'Profil'} • ${current.imported || 0} oturum çerezi içe aktarıldı.`;
+      return `${current.profileName || current.profile || 'Profil'} • ${current.imported || 0} platform çerezi içe aktarıldı.`;
     }
     if (current.status === 'protected') {
-      return 'Tarayıcı çerezleri bulundu ancak bazıları tarayıcı koruması nedeniyle okunamadı. Yerel bağlantı merkezindeki StreamWatch girişi kullanılabilir.';
+      return 'Tarayıcı çerezleri bulundu fakat korumalı çerezler okunamadı. Platform kartlarında gerçek giriş durumu ayrı ayrı gösterilir; gerekirse StreamWatch İçinde Giriş kullan.';
     }
     if (current.status === 'unsupported') return 'Bu tarayıcı için doğrudan çerez aktarımı desteklenmiyor.';
     if (current.error) return `Oturum aktarımı başarısız: ${current.error}`;
-    return 'Bu profilde kullanılabilir oturum bulunamadı.';
+    return 'Bu profilde kullanılabilir platform oturumu bulunamadı.';
   }
 
   async function refreshProfiles(force = false) {
@@ -60,11 +61,11 @@
         option.textContent = `${profile.name}${profile.lastUsed ? ' • son kullanılan' : ''}`;
         profileSelect.appendChild(option);
       });
-      const current = state?.selectedProfile?.id;
+      const current = state?.selectedProfile?.id || state?.selectedProfile;
       if (current && profiles.some((profile) => profile.id === current)) profileSelect.value = current;
       else profileSelect.value = profiles[0].id;
       profileSelect.disabled = false;
-    } catch (error) {
+    } catch {
       profileSelect.innerHTML = '<option value="">Profil okunamadı</option>';
       profileSelect.disabled = true;
     }
@@ -135,7 +136,7 @@
       <div class="sw-account-heading">
         <div>
           <strong>Platform hesaplarını bağla</strong>
-          <small>Bağlantı artık 127.0.0.1 üzerinde çalışan yerel StreamWatch sayfasından yönetilir. Sayfa seçtiğin tarayıcı ve profille açılır.</small>
+          <small>Bağlı durumu yalnızca gerçek giriş çerezleri bulunduğunda gösterilir. Bağlantıyı Kopar StreamWatch oturumunu kalıcı olarak kaldırır.</small>
         </div>
       </div>
       <div class="sw-account-grid">
@@ -145,14 +146,15 @@
               <div class="sw-account-platform">${platformNames[platform]}</div>
               <span class="sw-account-status off" data-account-status>Bağlı değil</span>
             </div>
-            <div class="sw-account-cookie-count" data-cookie-count>Oturum verisi yok</div>
+            <div class="sw-account-cookie-count" data-cookie-count>Oturum kontrol ediliyor…</div>
             <div class="sw-account-buttons">
               <button type="button" class="sw-account-primary-btn" data-account-portal>Yerel Sitede Bağla</button>
               <button type="button" class="sw-account-secondary-btn" data-account-internal>StreamWatch'ta Giriş Yap</button>
+              <button type="button" class="sw-account-secondary-btn" data-account-disconnect>Bağlantıyı Kopar</button>
             </div>
           </article>`).join('')}
       </div>
-      <div class="sw-account-footnote">Yerel bağlantı merkezi yalnızca bilgisayarındaki 127.0.0.1 adresinde çalışır. Buradan platform giriş sayfasını açabilir, oturumu yenileyebilir ve tarayıcı koruması engellerse StreamWatch oturumuna doğrudan giriş yapabilirsin.</div>`;
+      <div class="sw-account-footnote">Bağlantıyı Kopar yalnızca StreamWatch'ın kalıcı oturumunu temizler; Chrome/Brave/Twitch/Kick/YouTube hesabından çıkış yapmaz. Tekrar bağlanmak istediğinde giriş düğmelerinden birini kullan.</div>`;
 
     body.appendChild(section);
 
@@ -181,15 +183,34 @@
         const card = button.closest('[data-platform]');
         const platform = card?.dataset.platform;
         if (!platform) return;
+        await api.accountBridge.allowPlatform(platform);
         await api.accountBridge.openInternal(platform);
+        await refreshStatus();
+      });
+    });
+
+    section.querySelectorAll('[data-account-disconnect]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const card = button.closest('[data-platform]');
+        const platform = card?.dataset.platform;
+        if (!platform) return;
+        button.disabled = true;
+        button.textContent = 'Koparılıyor…';
+        try {
+          await api.accountBridge.disconnect(platform);
+          await refreshStatus();
+        } finally {
+          if (!button.isConnected) return;
+          button.textContent = 'Bağlantıyı Kopar';
+        }
       });
     });
     return true;
   }
 
-  async function refreshStatus(state) {
+  async function refreshStatus() {
     try {
-      const current = state || await api.accountBridge.getStatus();
+      const current = await api.accountBridge.getStatus();
       const note = document.getElementById('sw-account-import-note');
       if (note) note.textContent = importMessage(current);
       for (const platform of platformOrder) {
@@ -199,8 +220,10 @@
         const badge = card.querySelector('[data-account-status]');
         badge.textContent = statusLabel(info);
         badge.className = `sw-account-status ${statusClass(info)}`;
-        const count = card.querySelector('[data-cookie-count]');
-        count.textContent = info.cookieCount ? `${info.cookieCount} oturum çerezi mevcut` : 'Oturum verisi yok';
+        const detail = card.querySelector('[data-cookie-count]');
+        detail.textContent = info.detail || (info.cookieCount ? `${info.cookieCount} oturum çerezi mevcut` : 'Bağlı bir oturum bulunamadı.');
+        const disconnect = card.querySelector('[data-account-disconnect]');
+        if (disconnect) disconnect.disabled = Boolean(info.blocked);
       }
     } catch { }
   }
@@ -216,8 +239,8 @@
     }, 250);
     setTimeout(() => clearInterval(timer), 20000);
 
-    api.accountBridge.onState((state) => {
-      refreshStatus(state);
+    api.accountBridge.onState(() => {
+      refreshStatus();
       refreshProfiles(false);
     });
   }
