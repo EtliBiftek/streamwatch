@@ -28,6 +28,7 @@ function inject(win) {
     injectFile(win, 'src/renderer/layout-v2.js', 'js'),
     injectFile(win, 'src/renderer/account-bridge.js', 'js'),
     injectFile(win, 'src/renderer/account-bridge-v3.js', 'js'),
+    injectFile(win, 'src/renderer/browser-session-bridge.js', 'js'),
     injectFile(win, 'src/renderer/interface-polish.js', 'js'),
   ];
   Promise.allSettled(jobs).then((results) => {
