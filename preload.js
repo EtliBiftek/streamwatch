@@ -58,6 +58,15 @@ contextBridge.exposeInMainWorld('api', {
     getInfo: () => ipcRenderer.invoke('browser-bridge-info'),
     onState: (cb) => ipcRenderer.on('browser-bridge-state', (_, value) => cb(value)),
   },
+  oauthAccounts: {
+    getConfig: () => ipcRenderer.invoke('oauth-accounts-config'),
+    saveConfig: (config) => ipcRenderer.invoke('oauth-accounts-save-config', config || {}),
+    getStatus: () => ipcRenderer.invoke('oauth-accounts-status'),
+    validate: () => ipcRenderer.invoke('oauth-accounts-validate'),
+    connect: (platform) => ipcRenderer.invoke('oauth-accounts-connect', platform),
+    disconnect: (platform) => ipcRenderer.invoke('oauth-accounts-disconnect', platform),
+    onState: (cb) => ipcRenderer.on('oauth-accounts-state', (_, value) => cb(value)),
+  },
   liveTools: {
     checkNow: () => ipcRenderer.invoke('live-tools-check-now'),
     openChat: (entry) => ipcRenderer.invoke('live-tools-chat-open', entry),
