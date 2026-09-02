@@ -7,6 +7,7 @@ require('./live-tools.js');
 require('./polling-guard.js');
 require('./oauth-session-mode.js');
 require('./oauth-accounts.js');
+require('./oauth-connect-hub.js');
 require('./enhancements.js');
 require('./developer-polish.js');
 require('./taskbar-icon.js');
