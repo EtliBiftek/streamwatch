@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "StreamWatch Browser Bridge",
+  "version": "1.0.0",
+  "description": "Tarayıcıdaki YouTube, Twitch ve Kick oturumlarını kullanıcı isteğiyle StreamWatch'a aktarır.",
+  "permissions": ["cookies"],
+  "host_permissions": [
+    "https://*.youtube.com/*",
+    "https://*.google.com/*",
+    "https://*.googleusercontent.com/*",
+    "https://*.twitch.tv/*",
+    "https://*.kick.com/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1/*"],
+      "js": ["bridge-page.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "StreamWatch Browser Bridge"
+  }
+}
