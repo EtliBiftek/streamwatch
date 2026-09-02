@@ -117,8 +117,10 @@ jobs:
           node --check oauth-app-config.js
           node --check oauth-production-bootstrap.js
           node --check oauth-accounts.js
+          node --check oauth-player-identity-layer.js
           node --check oauth-connect-hub.js
           node --check ui-integrations.js
+          node --check src/oauth-player-identity.js
           node --check src/renderer/updater-v2.js
           node --check src/renderer/oauth-accounts.js
 
