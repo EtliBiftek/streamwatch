@@ -10,6 +10,7 @@ require('./local-auth-portal.js');
 require('./account-connections-v2.js');
 require('./account-connections-v3.js');
 require('./browser-session-bridge.js');
+require('./browser-bridge-legacy-off.js');
 require('./enhancements.js');
 require('./developer-polish.js');
 require('./taskbar-icon.js');
