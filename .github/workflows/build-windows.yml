@@ -84,12 +84,23 @@ jobs:
             kickClientId: process.env.KICK_CLIENT_ID || '',
             kickClientSecret: process.env.KICK_CLIENT_SECRET || '',
           };
+
+          const missing = [];
+          if (!config.youtubeClientId) missing.push('STREAMWATCH_YOUTUBE_CLIENT_ID');
+          if (!config.twitchClientId) missing.push('STREAMWATCH_TWITCH_CLIENT_ID');
+          if (!config.kickClientId) missing.push('STREAMWATCH_KICK_CLIENT_ID');
+          if (!config.kickClientSecret) missing.push('STREAMWATCH_KICK_CLIENT_SECRET');
+
+          if (missing.length) {
+            console.error('ERROR: OAuth-enabled StreamWatch release cannot be built without app-owned OAuth credentials.');
+            console.error('Missing repository Actions variables/secrets:');
+            for (const name of missing) console.error(` - ${name}`);
+            console.error('These values belong to the StreamWatch developer; end users must never enter them.');
+            process.exit(2);
+          }
+
           fs.writeFileSync('oauth-production.json', JSON.stringify(config));
-          console.log('OAuth app config prepared:', {
-            youtube: Boolean(config.youtubeClientId),
-            twitch: Boolean(config.twitchClientId),
-            kick: Boolean(config.kickClientId && config.kickClientSecret),
-          });
+          console.log('OAuth app config prepared: { youtube: true, twitch: true, kick: true }');
           NODE
 
       - name: Install dependencies
