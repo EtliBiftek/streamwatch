@@ -65,6 +65,33 @@ jobs:
           npm version "$VERSION" --no-git-tag-version --allow-same-version
           echo "STREAMWATCH_VERSION=$VERSION" >> "$GITHUB_ENV"
 
+      - name: Prepare app OAuth config
+        shell: bash
+        env:
+          YOUTUBE_CLIENT_ID: ${{ vars.STREAMWATCH_YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.STREAMWATCH_YOUTUBE_CLIENT_SECRET }}
+          TWITCH_CLIENT_ID: ${{ vars.STREAMWATCH_TWITCH_CLIENT_ID }}
+          KICK_CLIENT_ID: ${{ vars.STREAMWATCH_KICK_CLIENT_ID }}
+          KICK_CLIENT_SECRET: ${{ secrets.STREAMWATCH_KICK_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const config = {
+            youtubeClientId: process.env.YOUTUBE_CLIENT_ID || '',
+            youtubeClientSecret: process.env.YOUTUBE_CLIENT_SECRET || '',
+            twitchClientId: process.env.TWITCH_CLIENT_ID || '',
+            kickClientId: process.env.KICK_CLIENT_ID || '',
+            kickClientSecret: process.env.KICK_CLIENT_SECRET || '',
+          };
+          fs.writeFileSync('oauth-production.json', JSON.stringify(config));
+          console.log('OAuth app config prepared:', {
+            youtube: Boolean(config.youtubeClientId),
+            twitch: Boolean(config.twitchClientId),
+            kick: Boolean(config.kickClientId && config.kickClientSecret),
+          });
+          NODE
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
@@ -76,12 +103,13 @@ jobs:
           node --check updater-v2.js
           node --check preload.js
           node --check oauth-session-mode.js
+          node --check oauth-app-config.js
+          node --check oauth-production-bootstrap.js
           node --check oauth-accounts.js
           node --check oauth-connect-hub.js
           node --check ui-integrations.js
           node --check src/renderer/updater-v2.js
           node --check src/renderer/oauth-accounts.js
-          node --check src/renderer/oauth-connect-hub-ui.js
 
       - name: Build Windows installer
         run: npm run build -- --win --x64 --publish never
