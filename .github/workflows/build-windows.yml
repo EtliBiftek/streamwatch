@@ -75,6 +75,7 @@ jobs:
           node --check entry.js
           node --check updater-v2.js
           node --check preload.js
+          node --check oauth-session-mode.js
           node --check oauth-accounts.js
           node --check ui-integrations.js
           node --check src/renderer/updater-v2.js
