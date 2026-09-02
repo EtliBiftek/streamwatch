@@ -27,7 +27,6 @@ function inject(win) {
     injectFile(win, 'src/renderer/live-tools.js', 'js'),
     injectFile(win, 'src/renderer/layout-v2.js', 'js'),
     injectFile(win, 'src/renderer/oauth-accounts.js', 'js'),
-    injectFile(win, 'src/renderer/oauth-connect-hub-ui.js', 'js'),
     injectFile(win, 'src/renderer/interface-polish.js', 'js'),
   ];
   Promise.allSettled(jobs).then((results) => {
