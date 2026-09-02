@@ -74,7 +74,6 @@ jobs:
           set -euo pipefail
           node --check entry.js
           node --check updater-v2.js
-          node --check updater-download-fix.js
           node --check preload.js
           node --check account-bridge.js
           node --check local-auth-portal.js
