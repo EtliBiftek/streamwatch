@@ -21,13 +21,12 @@ function inject(win) {
     injectFile(win, 'src/renderer/player-engine.css', 'css'),
     injectFile(win, 'src/renderer/live-tools.css', 'css'),
     injectFile(win, 'src/renderer/layout-v2.css', 'css'),
-    injectFile(win, 'src/renderer/account-bridge.css', 'css'),
+    injectFile(win, 'src/renderer/oauth-accounts.css', 'css'),
     injectFile(win, 'src/renderer/interface-polish.css', 'css'),
     injectFile(win, 'src/renderer/player-engine.js', 'js'),
     injectFile(win, 'src/renderer/live-tools.js', 'js'),
     injectFile(win, 'src/renderer/layout-v2.js', 'js'),
-    injectFile(win, 'src/renderer/account-bridge.js', 'js'),
-    injectFile(win, 'src/renderer/browser-session-bridge.js', 'js'),
+    injectFile(win, 'src/renderer/oauth-accounts.js', 'js'),
     injectFile(win, 'src/renderer/interface-polish.js', 'js'),
   ];
   Promise.allSettled(jobs).then((results) => {
