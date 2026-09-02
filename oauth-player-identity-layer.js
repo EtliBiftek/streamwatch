@@ -1,7 +1,7 @@
 'use strict';
 
 const { app, session, webContents } = require('electron');
-const { platformFromUrl, injectOAuthIdentity } = require('./src/oauth-player-identity');
+const { platformFromUrl, readAccount, injectOAuthIdentity } = require('./src/oauth-player-identity');
 
 function isStreamSession(contents) {
   try {
@@ -9,6 +9,20 @@ function isStreamSession(contents) {
   } catch {
     return false;
   }
+}
+
+function isWebLoginUrl(platform, url) {
+  const value = String(url || '');
+  if (platform === 'youtube') {
+    return /accounts\.google\.com\/.*(?:ServiceLogin|signin)|youtube\.com\/(?:signin|login)/i.test(value);
+  }
+  if (platform === 'twitch') {
+    return /(?:^|\.)twitch\.tv\/login(?:[/?#]|$)|passport\.twitch\.tv/i.test(value);
+  }
+  if (platform === 'kick') {
+    return /(?:^|\.)kick\.com\/(?:login|signup|register)(?:[/?#]|$)/i.test(value);
+  }
+  return false;
 }
 
 function apply(contents, url = null) {
@@ -27,6 +41,22 @@ function apply(contents, url = null) {
 function attach(contents) {
   if (!contents || contents.isDestroyed() || contents.__streamwatchOAuthIdentityAttached) return;
   contents.__streamwatchOAuthIdentityAttached = true;
+
+  contents.on('will-navigate', (event, targetUrl) => {
+    if (!isStreamSession(contents)) return;
+    const platform = platformFromUrl(contents.getURL?.() || '');
+    if (!platform || !readAccount(platform) || !isWebLoginUrl(platform, targetUrl)) return;
+    event.preventDefault();
+    apply(contents);
+  });
+
+  contents.on('will-redirect', (event, targetUrl) => {
+    if (!isStreamSession(contents)) return;
+    const platform = platformFromUrl(contents.getURL?.() || '');
+    if (!platform || !readAccount(platform) || !isWebLoginUrl(platform, targetUrl)) return;
+    event.preventDefault();
+    apply(contents);
+  });
 
   contents.on('did-finish-load', () => apply(contents));
   contents.on('dom-ready', () => apply(contents));
