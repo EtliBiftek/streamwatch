@@ -79,13 +79,25 @@ jobs:
           node --check local-auth-portal.js
           node --check account-connections-v2.js
           node --check account-connections-v3.js
+          node --check browser-session-bridge.js
           node --check ui-integrations.js
+          node --check browser-extension/service-worker.js
+          node --check browser-extension/bridge-page.js
           node --check src/renderer/updater-v2.js
           node --check src/renderer/account-bridge.js
-          node --check src/renderer/account-bridge-v3.js
+          node --check src/renderer/browser-session-bridge.js
 
       - name: Build Windows installer
         run: npm run build -- --win --x64 --publish never
+
+      - name: Validate Browser Bridge bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/win-unpacked/resources/browser-extension/manifest.json
+          test -f dist/win-unpacked/resources/browser-extension/service-worker.js
+          test -f dist/win-unpacked/resources/browser-extension/bridge-page.js
+          node -e "JSON.parse(require('fs').readFileSync('dist/win-unpacked/resources/browser-extension/manifest.json','utf8')); console.log('Browser Bridge bundle OK')"
 
       - name: Validate updater metadata
         shell: bash
