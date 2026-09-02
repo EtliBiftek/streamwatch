@@ -52,6 +52,12 @@ contextBridge.exposeInMainWorld('api', {
     allowPlatform: (platform) => ipcRenderer.invoke('account-bridge-allow-platform', platform),
     onState: (cb) => ipcRenderer.on('account-bridge-state', (_, value) => cb(value)),
   },
+  browserBridge: {
+    start: (platform) => ipcRenderer.invoke('browser-bridge-start', platform),
+    setup: () => ipcRenderer.invoke('browser-bridge-setup'),
+    getInfo: () => ipcRenderer.invoke('browser-bridge-info'),
+    onState: (cb) => ipcRenderer.on('browser-bridge-state', (_, value) => cb(value)),
+  },
   liveTools: {
     checkNow: () => ipcRenderer.invoke('live-tools-check-now'),
     openChat: (entry) => ipcRenderer.invoke('live-tools-chat-open', entry),
