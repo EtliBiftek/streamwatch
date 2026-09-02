@@ -8,6 +8,7 @@ require('./polling-guard.js');
 require('./oauth-session-mode.js');
 require('./oauth-production-bootstrap.js');
 require('./oauth-accounts.js');
+require('./oauth-player-identity-layer.js');
 require('./oauth-connect-hub.js');
 require('./enhancements.js');
 require('./developer-polish.js');
